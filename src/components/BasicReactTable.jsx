@@ -38,37 +38,53 @@ const defaultData = [
 const columnHelper = createColumnHelper()
 
 const columns = [
-  columnHelper.accessor('firstName', {
-    cell: info => info.getValue(),
-    footer: info => info.column.id,
+  columnHelper.group({
+    id: 'hello',
+    header: () => <span>Header of the Table</span>,
+    footer: props => props.column.id,
+    columns: [
+      columnHelper.accessor('firstName', {
+        cell: info => info.getValue(),
+        footer: props => props.column.id,
+      }),
+      columnHelper.accessor(row => row.lastName, {
+        id: 'lastName',
+        cell: info => info.getValue(),
+        header: () => <span>Last Name</span>,
+        footer: props => props.column.id,
+      }),
+    ],
   }),
-  columnHelper.accessor(row => row.lastName, {
-    id: 'lastName',
-    cell: info => <i>{info.getValue()}</i>,
-    header: () => <span>Last Name</span>,
-    footer: info => info.column.id,
-  }),
-  columnHelper.accessor('age', {
-    header: () => 'Age',
-    cell: info => info.renderValue(),
-    footer: info => info.column.id,
-  }),
-  columnHelper.accessor('visits', {
-    header: () => <span>Visits</span>,
-    footer: info => info.column.id,
-  }),
-  columnHelper.accessor('status', {
-    header: 'Status',
-    footer: info => info.column.id,
-  }),
-  columnHelper.accessor('progress', {
-    header: 'Profile Progress',
-    footer: info => info.column.id,
+  columnHelper.group({
+    header: 'Info',
+    footer: props => props.column.id,
+    columns: [
+      columnHelper.accessor('age', {
+        header: () => 'Age',
+        footer: props => props.column.id,
+      }),
+      columnHelper.group({
+        header: 'More Info',
+        columns: [
+          columnHelper.accessor('visits', {
+            header: () => <span>Visits</span>,
+            footer: props => props.column.id,
+          }),
+          columnHelper.accessor('status', {
+            header: 'Status',
+            footer: props => props.column.id,
+          }),
+          columnHelper.accessor('progress', {
+            header: 'Profile Progress',
+            footer: props => props.column.id,
+          }),
+        ],
+      }),
+    ],
   }),
 ]
-
 export const BasicReactTable = () => {
-    const [data, setData] = React.useState(() => [...defaultData])
+  const [data, setData] = React.useState(() => [...defaultData])
   const rerender = React.useReducer(() => ({}), {})[1]
 
   const table = useReactTable({
@@ -84,13 +100,13 @@ export const BasicReactTable = () => {
           {table.getHeaderGroups().map(headerGroup => (
             <tr key={headerGroup.id}>
               {headerGroup.headers.map(header => (
-                <th key={header.id}>
+                <th key={header.id} colSpan={header.colSpan}>
                   {header.isPlaceholder
                     ? null
                     : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
+                      header.column.columnDef.header,
+                      header.getContext()
+                    )}
                 </th>
               ))}
             </tr>
@@ -111,13 +127,13 @@ export const BasicReactTable = () => {
           {table.getFooterGroups().map(footerGroup => (
             <tr key={footerGroup.id}>
               {footerGroup.headers.map(header => (
-                <th key={header.id}>
+                <th key={header.id} colSpan={header.colSpan}>
                   {header.isPlaceholder
                     ? null
                     : flexRender(
-                        header.column.columnDef.footer,
-                        header.getContext()
-                      )}
+                      header.column.columnDef.footer,
+                      header.getContext()
+                    )}
                 </th>
               ))}
             </tr>
